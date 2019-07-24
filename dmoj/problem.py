@@ -223,7 +223,10 @@ class TestCase(object):
             syscall, callname, args = proc.protection_fault
             raise InternalError('generator invoked disallowed syscall %s (%s)' % (syscall, callname))
         if proc.returncode:
-            raise InternalError('generator exited with nonzero code: %s' % proc.returncode)
+            error = 'generator exited with nonzero code %s' % proc.returncode
+            if hasattr(proc, 'feedback') and proc.feedback:
+                error += ' with feedback: %s' % proc.feedback
+            raise InternalError(error)
 
     def input_data(self):
         gen = self.config.generator
